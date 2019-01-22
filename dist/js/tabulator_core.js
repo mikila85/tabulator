@@ -3233,7 +3233,7 @@ RowManager.prototype._virtualRenderFill = function (position, forceMove, offset)
 		this.vDomScrollPosTop = this.scrollTop;
 		this.vDomScrollPosBottom = this.scrollTop;
 
-		holder.scrollTop = this.scrollTop;
+		holder.scrollTop = this.storedScrollTop || this.scrollTop;
 
 		element.style.minWidth = onlyGroupHeaders ? self.table.columnManager.getWidth() + "px" : "";
 
@@ -3510,7 +3510,7 @@ RowManager.prototype.redraw = function (force) {
 
 RowManager.prototype.resetScroll = function () {
 	this.element.scrollLeft = 0;
-	this.element.scrollTop = 0;
+	this.element.scrollTop = this.storedScrollTop || 0;
 
 	if (this.table.browser === "ie") {
 		var event = document.createEvent("Event");
@@ -4928,6 +4928,7 @@ Tabulator.prototype.defaultOptions = {
 	initialFilter: false, //initial filtering criteria
 
 	columnHeaderSortMulti: true, //multiple or single column sorting
+	threeStateSortMode: false, //three state sorting (asc, desc, none)
 
 	sortOrderReverse: false, //reverse internal sort ordering
 

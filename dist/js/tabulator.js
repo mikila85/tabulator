@@ -4073,7 +4073,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			this.vDomScrollPosBottom = this.scrollTop;
 
-			holder.scrollTop = this.scrollTop;
+			holder.scrollTop = this.storedScrollTop || this.scrollTop;
 
 			element.style.minWidth = onlyGroupHeaders ? self.table.columnManager.getWidth() + "px" : "";
 
@@ -4433,7 +4433,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 		this.element.scrollLeft = 0;
 
-		this.element.scrollTop = 0;
+		this.element.scrollTop = this.storedScrollTop || 0;
 
 		if (this.table.browser === "ie") {
 
@@ -6303,6 +6303,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 		columnHeaderSortMulti: true, //multiple or single column sorting
+
+		threeStateSortMode: false, //three state sorting (asc, desc, none)
 
 
 		sortOrderReverse: false, //reverse internal sort ordering
@@ -18014,6 +18016,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		"sorters": "sorters",
 		// "sort_dir":"sort_dir",
 		"filters": "filters"
+		// "filter_value":"filter_value",
+		// "filter_type":"filter_type",
 	};
 
 	//set the property names for pagination responses
@@ -19081,7 +19085,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				    match = false;
 
 				if (column.modules.sort) {
-					dir = column.modules.sort.dir == "asc" ? "desc" : column.modules.sort.dir == "desc" ? "asc" : column.modules.sort.startingDir;
+					if (self.table.options.threeStateSortMode && column.modules.sort.dir === "desc") {
+						dir = "none";
+					} else {
+						dir = column.modules.sort.dir == "asc" ? "desc" : column.modules.sort.dir == "desc" ? "asc" : column.modules.sort.startingDir;
+					}
 
 					if (self.table.options.columnHeaderSortMulti && (e.shiftKey || e.ctrlKey)) {
 						sorters = self.getSort();
@@ -19091,7 +19099,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						});
 
 						if (match > -1) {
-							sorters[match].dir = sorters[match].dir == "asc" ? "desc" : "asc";
+							if (self.table.options.threeStateSortMode && sorters[match].dir == "desc") {
+								sorters[match].dir = "none";
+							} else {
+								sorters[match].dir = sorters[match].dir == "asc" ? "desc" : "asc";
+							}
 
 							if (match != sorters.length - 1) {
 								sorters.push(sorters.splice(match, 1)[0]);
@@ -19144,16 +19156,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		}
 
 		sortList.forEach(function (item) {
-			var column;
+			if (item.dir !== "none") {
+				var column;
 
-			column = self.table.columnManager.findColumn(item.column);
+				column = self.table.columnManager.findColumn(item.column);
 
-			if (column) {
-				item.column = column;
-				newSortList.push(item);
-				self.changed = true;
-			} else {
-				console.warn("Sort Warning - Sort field does not exist and is being ignored: ", item.column);
+				if (column) {
+					item.column = column;
+					newSortList.push(item);
+					self.changed = true;
+				} else {
+					console.warn("Sort Warning - Sort field does not exist and is being ignored: ", item.column);
+				}
 			}
 		});
 
