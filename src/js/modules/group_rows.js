@@ -47,7 +47,7 @@ GroupComponent.prototype._getSelf = function(){
 };
 
 GroupComponent.prototype.getTable = function(){
-	return this._group.table;
+	return this._group.groupManager.table;
 };
 
 //////////////////////////////////////////////////
@@ -467,6 +467,7 @@ Group.prototype.hide = function(){
 
 		this.groupManager.table.rowManager.setDisplayRows(this.groupManager.updateGroupRows(), this.groupManager.getDisplayIndex());
 
+		this.groupManager.table.rowManager.checkClassicModeGroupHeaderWidth();
 	}else{
 		this.groupManager.updateGroupRows(true);
 	}
@@ -507,6 +508,8 @@ Group.prototype.show = function(){
 		}
 
 		this.groupManager.table.rowManager.setDisplayRows(this.groupManager.updateGroupRows(), this.groupManager.getDisplayIndex());
+
+		this.groupManager.table.rowManager.checkClassicModeGroupHeaderWidth();
 	}else{
 		this.groupManager.updateGroupRows(true);
 	}
