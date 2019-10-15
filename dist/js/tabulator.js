@@ -18981,7 +18981,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		var row = this.table.rowManager.findRow(rowInfo);
 
 		if (row) {
-			if (this.selectedRows.indexOf(row) == -1) {
+			if (this.selectedRows.indexOf(row) == -1 && (this.table.options.selectable===true || this.selectedRows.length < this.table.options.selectable)) {
 				row.modules.select.selected = true;
 				row.getElement().classList.add("tabulator-selected");
 
