@@ -10072,7 +10072,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				paramKey = type + "Params";
 				params = typeof column.modules.columnCalcs[paramKey] === "function" ? column.modules.columnCalcs[paramKey](value, data) : column.modules.columnCalcs[paramKey];
 
-				column.setFieldValue(rowData, column.modules.columnCalcs[type](values, data, column.definition.bottomText || params));
+				column.setFieldValue(rowData, column.modules.columnCalcs[type](values, data, (column.definition.bottomText !== undefined)?column.definition.bottomText:params));
 			}
 		});
 
