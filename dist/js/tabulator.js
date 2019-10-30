@@ -19307,13 +19307,33 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					self._sortItem(item.column, item.dir, sortList, i);
 				}
 
-				self.setColumnHeader(item.column, item.dir, sortList.length, i);
+				self.setColumnHeader(item.column, item.dir);
 			});
 		} else {
 			sortList.forEach(function (item, i) {
-				self.setColumnHeader(item.column, item.dir, sortList.length, i);
+				self.setColumnHeader(item.column, item.dir);
 			});
 		}
+		
+		self.table.columnManager.columns.forEach(function(column){
+		    var arrowTextSpan;
+		    if(column.contentElement.getElementsByClassName("tabulator-arrow-text").length === 0){
+			arrowTextSpan = document.createElement('span');
+			arrowTextSpan.classList.add("tabulator-arrow-text");
+			column.contentElement.appendChild(arrowTextSpan);
+		    }else{
+			arrowTextSpan = column.contentElement.getElementsByClassName("tabulator-arrow-text")[0];
+		    }
+
+		    if(sortList.length>1){
+			var index = sortList.findIndex(function(sort){return sort.column===column});
+			if(index > -1){
+			    arrowTextSpan.textContent = index + 1;
+			}
+		    } else {
+			arrowTextSpan.textContent = "";
+		    }
+       	        })
 
 		if (self.table.options.dataSorted) {
 			self.table.options.dataSorted.call(self.table, self.getSort(), self.table.rowManager.getComponents(true));
@@ -19332,21 +19352,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	//set the column header sort direction
 	Sort.prototype.setColumnHeader = function (column, dir, sortListSize, index) {
-		var arrowTextSpan;
-		if(column.contentElement.getElementsByClassName("tabulator-arrow-text").length === 0){
-			arrowTextSpan = document.createElement('span');
-            		arrowTextSpan.classList.add("tabulator-arrow-text");
-            		column.contentElement.appendChild(arrowTextSpan);
-		}else{
-			arrowTextSpan = column.contentElement.getElementsByClassName("tabulator-arrow-text")[0];
-        	}
-		
-		if(sortListSize>1){
-            		arrowTextSpan.textContent = index + 1;
-		} else {
-           		 arrowTextSpan.textContent = "";
-		}
-
 		column.modules.sort.dir = dir;
 		column.getElement().setAttribute("aria-sort", dir);
 	};
