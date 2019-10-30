@@ -19132,6 +19132,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			//sort on click
 			colEl.addEventListener("click", function (e) {
+				if(column.definition.disableSort){
+					return;
+				}
+				
 				var dir = "",
 				    sorters = [],
 				    match = false;
@@ -19303,11 +19307,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					self._sortItem(item.column, item.dir, sortList, i);
 				}
 
-				self.setColumnHeader(item.column, item.dir);
+				self.setColumnHeader(item.column, item.dir, sortList.length, i);
 			});
 		} else {
 			sortList.forEach(function (item, i) {
-				self.setColumnHeader(item.column, item.dir);
+				self.setColumnHeader(item.column, item.dir, sortList.length, i);
 			});
 		}
 
@@ -19319,7 +19323,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	//clear sort arrows on columns
 	Sort.prototype.clearColumnHeaders = function () {
 		this.table.columnManager.getRealColumns().forEach(function (column) {
-			if (column.modules.sort) {
+			if (column.modules.sort && !column.definition.disableSort) {
 				column.modules.sort.dir = "none";
 				column.getElement().setAttribute("aria-sort", "none");
 			}
@@ -19327,7 +19331,22 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	};
 
 	//set the column header sort direction
-	Sort.prototype.setColumnHeader = function (column, dir) {
+	Sort.prototype.setColumnHeader = function (column, dir, sortListSize, index) {
+		var arrowTextSpan;
+		if(column.contentElement.getElementsByClassName("tabulator-arrow-text").length === 0){
+			arrowTextSpan = document.createElement('span');
+            		arrowTextSpan.classList.add("tabulator-arrow-text");
+            		column.contentElement.appendChild(arrowTextSpan);
+		}else{
+			arrowTextSpan = column.contentElement.getElementsByClassName("tabulator-arrow-text")[0];
+        	}
+		
+		if(sortListSize>1){
+            		arrowTextSpan.textContent = index + 1;
+		} else {
+           		 arrowTextSpan.textContent = "";
+		}
+
 		column.modules.sort.dir = dir;
 		column.getElement().setAttribute("aria-sort", dir);
 	};
